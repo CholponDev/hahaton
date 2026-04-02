@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { db } from "../firebase";
 import { collection, onSnapshot, deleteDoc, doc, updateDoc } from "firebase/firestore";
+import { book } from "./data";
 
 function Books() {
   const [books, setBooks] = useState([]);
