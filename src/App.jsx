@@ -4,6 +4,20 @@ import Header from './components/Header'
 import Books from './pages/Books'
 import Auth from './pages/Auth'
 import Admin from './pages/Admin'
+import AdminAuth from './pages/AdminAuth'
+import { useState } from "react";
+import AdminAuth from "./AdminAuth";
+import AdminPanel from "./AdminPanel"; // твой админский интерфейс
+
+function App() {
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  if (!isAdmin) {
+    return <AdminAuth onLogin={() => setIsAdmin(true)} />;
+  }
+
+  return <AdminPanel />;
+}
 
 function App() {
 
