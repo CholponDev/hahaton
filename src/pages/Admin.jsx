@@ -8,36 +8,38 @@ function Admin() {
 
   const addBook = async () => {
     if (!title || !author) {
-      alert("Заполни поля");
+      alert("Заполни все поля");
       return;
     }
 
-    await addDoc(collection(db, "books"), {
-      title,
-      author
-    });
-
-    setTitle("");
-    setAuthor("");
+    try {
+      await addDoc(collection(db, "books"), { title, author });
+      setTitle("");
+      setAuthor("");
+      alert("Книга добавлена!");
+    } catch (err) {
+      alert("Ошибка при добавлении книги: " + err.message);
+    }
   };
 
   return (
-    <div>
+    <div style={{ padding: "20px", maxWidth: "400px", margin: "auto" }}>
       <h2>Админ панель</h2>
 
-      <input 
+      <input
         value={title}
-        onChange={(e)=>setTitle(e.target.value)} 
-        placeholder="Название книги" 
+        onChange={(e) => setTitle(e.target.value)}
+        placeholder="Название книги"
+        style={{ width: "100%", marginBottom: "10px" }}
       />
-      
-      <input 
+      <input
         value={author}
-        onChange={(e)=>setAuthor(e.target.value)} 
-        placeholder="Автор" 
+        onChange={(e) => setAuthor(e.target.value)}
+        placeholder="Автор"
+        style={{ width: "100%", marginBottom: "10px" }}
       />
 
-      <button onClick={addBook}>Добавить книгу</button>
+      <button onClick={addBook} style={{ width: "100%" }}>Добавить книгу</button>
     </div>
   );
 }

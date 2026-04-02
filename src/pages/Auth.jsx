@@ -4,7 +4,7 @@ import { app } from "../firebase";
 
 const auth = getAuth(app);
 
-function Auth() {
+export default function Auth() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -21,15 +21,22 @@ function Auth() {
   };
 
   return (
-    <div>
+    <div style={{ padding: "20px", maxWidth: "400px", margin: "auto" }}>
       <h2>Авторизация</h2>
-      <input onChange={(e)=>setEmail(e.target.value)} placeholder="Email" />
-      <input onChange={(e)=>setPassword(e.target.value)} placeholder="Пароль" />
-
-      <button onClick={register}>Регистрация</button>
-      <button onClick={login}>Войти</button>
+      <input
+        type="email"
+        placeholder="Email"
+        onChange={(e) => setEmail(e.target.value)}
+        style={{ width: "100%", marginBottom: "10px" }}
+      />
+      <input
+        type="password"
+        placeholder="Пароль"
+        onChange={(e) => setPassword(e.target.value)}
+        style={{ width: "100%", marginBottom: "10px" }}
+      />
+      <button onClick={register} style={{ width: "100%", marginBottom: "5px" }}>Регистрация</button>
+      <button onClick={login} style={{ width: "100%" }}>Войти</button>
     </div>
   );
 }
-
-export default Auth;

@@ -17,11 +17,15 @@ function Books() {
       setBooks(data);
     });
 
-    return () => unsubscribe(); // важно
+    return () => unsubscribe();
   }, []);
 
   const deleteBook = async (id) => {
-    await deleteDoc(doc(db, "books", id));
+    try {
+      await deleteDoc(doc(db, "books", id));
+    } catch (err) {
+      alert("Ошибка при удалении книги: " + err.message);
+    }
   };
 
   const startEdit = (book) => {
@@ -31,25 +35,28 @@ function Books() {
   };
 
   const saveEdit = async (id) => {
-    await updateDoc(doc(db, "books", id), {
-      title: newTitle,
-      author: newAuthor
-    });
-    setEditId(null);
+    try {
+      await updateDoc(doc(db, "books", id), {
+        title: newTitle,
+        author: newAuthor
+      });
+      setEditId(null);
+    } catch (err) {
+      alert("Ошибка при сохранении: " + err.message);
+    }
   };
 
   return (
-    <div>
+    <div style={{ padding: "20px" }}>
       <h2>Список книг</h2>
-
       {books.length === 0 && <p>Книг пока нет</p>}
 
       {books.map(book => (
-        <div key={book.id}>
+        <div key={book.id} style={{ marginBottom: "15px", borderBottom: "1px solid #ccc", paddingBottom: "10px" }}>
           {editId === book.id ? (
             <>
-              <input value={newTitle} onChange={(e)=>setNewTitle(e.target.value)} />
-              <input value={newAuthor} onChange={(e)=>setNewAuthor(e.target.value)} />
+              <input value={newTitle} onChange={(e) => setNewTitle(e.target.value)} />
+              <input value={newAuthor} onChange={(e) => setNewAuthor(e.target.value)} />
               <button onClick={() => saveEdit(book.id)}>Сохранить</button>
             </>
           ) : (
