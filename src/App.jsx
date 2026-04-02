@@ -1,31 +1,60 @@
-import { useState } from "react";
-import { Routes, Route } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Routes, Route, Navigate } from "react-router-dom";
 import './App.css';
 
 import Header from './components/Header';
 import Books from './pages/Books';
 import Auth from './pages/Auth';
-import Admin from './pages/Admin';
 import AdminAuth from './pages/AdminAuth';
-import AdminPanel from './pages/AdminPanel'; // твой интерфейс админа
+import AdminPanel from './pages/AdminPanel';
+import { auth, db } from "./firebase";
+import { onAuthStateChanged } from "firebase/auth";
+import { doc, getDoc } from "firebase/firestore";
 
 function App() {
-  const [isAdmin, setIsAdmin] = useState(false);
+  const [user, setUser] = useState(null);      // текущий пользователь
+  const [isAdmin, setIsAdmin] = useState(false); // флаг админа
+  const [loading, setLoading] = useState(true); // пока проверяем роль
 
-  // Если админ ещё не вошёл — показываем форму входа для админа
-  if (!isAdmin) return <AdminAuth onLogin={() => setIsAdmin(true)} />;
+  // Проверка авторизации и роли админа
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (u) => {
+      if (u) {
+        setUser(u);
+        const userDoc = await getDoc(doc(db, "users", u.uid));
+        if (userDoc.exists() && userDoc.data().role === "admin") {
+          setIsAdmin(true);
+        } else {
+          setIsAdmin(false);
+        }
+      } else {
+        setUser(null);
+        setIsAdmin(false);
+      }
+      setLoading(false);
+    });
 
-  // Когда админ вошёл — основной интерфейс с роутами
+    return () => unsubscribe();
+  }, []);
+
+  if (loading) return <p>Загрузка...</p>;
+
   return (
     <>
       <Header />
       <Routes>
         <Route path="/" element={<Books />} />
         <Route path="/auth" element={<Auth />} />
-        <Route path="/admin" element={<Admin />} />
+
+        {/* Защищённый админский роут */}
+        <Route
+          path="/admin"
+          element={isAdmin ? <AdminPanel /> : <Navigate to="/auth" />}
+        />
+
+        {/* Любой другой роут можно редиректить */}
+        <Route path="*" element={<Navigate to="/" />} />
       </Routes>
-      {/* Или если хочешь показывать админский интерфейс сразу: */}
-      <AdminPanel />
     </>
   );
 }
