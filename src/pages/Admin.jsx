@@ -7,19 +7,35 @@ function Admin() {
   const [author, setAuthor] = useState("");
 
   const addBook = async () => {
+    if (!title || !author) {
+      alert("Заполни поля");
+      return;
+    }
+
     await addDoc(collection(db, "books"), {
       title,
       author
     });
-    alert("Книга добавлена");
+
+    setTitle("");
+    setAuthor("");
   };
 
   return (
     <div>
       <h2>Админ панель</h2>
 
-      <input onChange={(e)=>setTitle(e.target.value)} placeholder="Название книги" />
-      <input onChange={(e)=>setAuthor(e.target.value)} placeholder="Автор" />
+      <input 
+        value={title}
+        onChange={(e)=>setTitle(e.target.value)} 
+        placeholder="Название книги" 
+      />
+      
+      <input 
+        value={author}
+        onChange={(e)=>setAuthor(e.target.value)} 
+        placeholder="Автор" 
+      />
 
       <button onClick={addBook}>Добавить книгу</button>
     </div>
